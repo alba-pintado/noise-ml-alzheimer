@@ -2,31 +2,31 @@ seed: 0
 output_dir: results
 plot_celltype: Microglia
 
-# Datos reales (ajusta los nombres de columna a tu .h5ad)
+# Real data (adjust the column names to your .h5ad)
 data:
   path: data/raw/sea_ad_mtg.h5ad
-  counts_layer: null              # capa con cuentas crudas; null = adata.raw o adata.X
+  counts_layer: null              # layer with raw counts; null = adata.raw or adata.X
   donor_col: donor_id
   celltype_col: Subclass
-  label_col: ADNC                 # cambio neuropatológico de Alzheimer
-  positive_values: [High, Intermediate]   # 1 = patología; el resto = 0
+  label_col: ADNC                 # Alzheimer's disease neuropathologic change
+  positive_values: [High, Intermediate]   # 1 = pathology; everything else = 0
   covariate_cols: [Age at death, Sex]
   celltypes: [Microglia-PVM, L2/3 IT, Sst, Pvalb, Astrocyte, Oligodendrocyte]
 
 features:
-  target_umis: 1500     # profundidad común tras submuestrear
-  min_cells: 50         # mínimo de células por donante x tipo celular
-  n_cells: 50           # todas los grupos con el mismo nº de células
-  min_mean: 0.05        # descarta genes casi sin expresión
-  n_genes_panel: 200    # genes por tipo celular
+  target_umis: 1500     # common depth after downsampling
+  min_cells: 50         # minimum cells per donor x cell type
+  n_cells: 50           # every group subsampled to the same number of cells
+  min_mean: 0.05        # drop barely expressed genes
+  n_genes_panel: 200    # genes per cell type
 
 model:
   kind: logreg          # logreg | rf
   n_splits: 5
   n_repeats: 5
-  n_perm: 20            # sube a 200+ para el resultado final
+  n_perm: 20            # raise to 200+ for the final result
 
-# Datos simulados para probar el pipeline (--demo)
+# Simulated data to test the pipeline (--demo)
 demo:
   n_donors: 60
   n_genes: 300
@@ -37,4 +37,4 @@ demo:
   seed: 0
 
 demo_features:
-  target_umis: 800     # las células simuladas tienen menos UMIs que las reales
+  target_umis: 800     # simulated cells have fewer UMIs than real ones

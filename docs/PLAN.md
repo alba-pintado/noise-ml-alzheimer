@@ -1,58 +1,58 @@
-# Plan del proyecto: ruido transcripcional y ML en Alzheimer
+# Project plan: transcriptional noise and ML in Alzheimer's disease
 
-## Pregunta
+## Question
 
-¿Las medidas de ruido transcripcional por tipo celular predicen la patología de Alzheimer de un donante, y aportan información **además** de la expresión media?
+Do per-cell-type transcriptional noise measures predict a donor's Alzheimer's pathology, and do they add information **beyond** mean expression?
 
-**Hipótesis:** algunas poblaciones (p. ej. microglía y neuronas vulnerables) aumentan su variabilidad célula a célula con la patología, y ese aumento se puede detectar aunque la media no cambie.
+**Hypothesis:** some populations (e.g. microglia and vulnerable neurons) increase their cell-to-cell variability with pathology, and that increase can be detected even when the mean does not change.
 
 ## So what
 
-- Identifica qué tipos celulares pierden antes el control de su expresión.
-- Propone el ruido como una clase de biomarcador complementaria a la expresión diferencial.
-- Es comprobable: se puede validar en un segundo dataset independiente.
+- Identifies which cell types lose control of their expression first.
+- Proposes noise as a class of biomarker complementary to differential expression.
+- It is testable: it can be validated in a second, independent dataset.
 
-## Datos
+## Data
 
-| | Uso |
+| | Use |
 |---|---|
-| **SEA-AD (MTG, snRNA-seq)** | Dataset principal. Neuropatología por donante (ADNC, Braak, Thal) y edad/sexo. Acceso abierto vía CELLxGENE. |
-| **Segundo atlas público** (p. ej. Mathys et al., ROSMAP) | Validación externa, si el acceso lo permite. Revisar las condiciones de uso antes de descargar. |
-| **Datos simulados** | Control positivo del pipeline (ya incluido). |
+| **SEA-AD (MTG, snRNA-seq)** | Main dataset. Per-donor neuropathology (ADNC, Braak, Thal) and age/sex. Open access via CELLxGENE. |
+| **A second public atlas** (e.g. Mathys et al., ROSMAP) | External validation, if access allows. Check the terms of use before downloading. |
+| **Simulated data** | Pipeline positive control (already included). |
 
-Si el atlas es muy grande, trabajar solo con los tipos celulares de interés y en modo `backed` de anndata.
+If the atlas is very large, work only with the cell types of interest and use anndata's `backed` mode.
 
-## Métodos
+## Methods
 
-1. **Preprocesado:** cuentas crudas, submuestreo a profundidad común, mismo número de células por donante x tipo celular, mínimo de células por grupo.
-2. **Métricas de ruido:** residuo de log CV² respecto a la tendencia media–CV² (por gen) y distancia media al centroide (global). Comparar con las métricas del TFM y elegir las más robustas.
-3. **Features por donante:** media (línea base), ruido por gen, ruido global, combinadas, covariables.
-4. **Modelos:** regresión logística con regularización L1/L2 (principal, interpretable) y random forest (comparación).
-5. **Evaluación:** CV anidada repetida, AUC; comparación por pares en las mismas particiones; test de permutación (≥200 permutaciones en el resultado final).
-6. **Interpretación:** qué tipos celulares y genes pesan más; enriquecimiento funcional de esos genes.
-7. **Extensiones si hay tiempo:** objetivo continuo (Braak o puntuación de progresión), validación externa, sensibilidad a la profundidad y al número de células.
+1. **Preprocessing:** raw counts, downsampling to a common depth, the same number of cells per donor x cell type, a minimum number of cells per group.
+2. **Noise metrics:** residual of log CV² from the mean–CV² trend (per gene) and mean distance to centroid (global). Compare with the thesis metrics and keep the most robust ones.
+3. **Donor-level features:** mean (baseline), per-gene noise, global noise, combined, covariates.
+4. **Models:** L1/L2-regularised logistic regression (main, interpretable) and random forest (comparison).
+5. **Evaluation:** repeated nested CV, AUC; pairwise comparison on the same splits; permutation test (≥200 permutations for the final result).
+6. **Interpretation:** which cell types and genes carry the most weight; functional enrichment of those genes.
+7. **Extensions if time allows:** continuous target (Braak or a progression score), external validation, sensitivity to depth and cell numbers.
 
-## Calendario
+## Timeline
 
-| Fechas | Hito |
+| Dates | Milestone |
 |---|---|
-| Hasta 9 nov | Repo público con el pipeline y el control positivo simulado (v0.1). Enviar a Fernando Delgado-Chaves. |
-| 10–23 nov | Descargar SEA-AD, explorar metadatos, primer cálculo de métricas en 2–3 tipos celulares. |
-| 24 nov – 14 dic | Modelos con datos reales, controles técnicos, test de permutación. |
-| 15 dic – 11 ene | Interpretación biológica, enriquecimiento, figuras finales. |
-| 12–31 ene | README final con el "so what", limpieza de código, validación externa si es posible. |
-| Febrero | Defensa del TFM. Repo terminado para recruiters y entrevistas. |
+| By 9 Nov | Public repo with the pipeline and the simulated positive control (v0.1). |
+| 10–23 Nov | Download SEA-AD, explore metadata, first metrics on 2–3 cell types. |
+| 24 Nov – 14 Dec | Models on real data, technical controls, permutation test. |
+| 15 Dec – 11 Jan | Biological interpretation, enrichment, final figures. |
+| 12–31 Jan | Final README with the "so what", code clean-up, external validation if possible. |
+| February | Thesis defence. Repo finished for recruiters and interviews. |
 
-## Riesgos
+## Risks
 
-- **Pocos donantes:** limita la potencia. Mitigación: modelos simples, CV repetida, intervalos.
-- **Confusión técnica:** lote, intervalo post mortem, calidad del núcleo. Mitigación: incluirlos como covariables o comprobar que no predicen la etiqueta por sí solos.
-- **Que el ruido no aporte nada:** también es un resultado publicable en el repo si está bien controlado.
-- **Solapamiento con el TFM:** confirmar con María Llorens qué partes del código y de los resultados pueden ser públicas antes de subir nada con datos reales.
+- **Few donors:** limits power. Mitigation: simple models, repeated CV, intervals.
+- **Technical confounding:** batch, post-mortem interval, nucleus quality. Mitigation: include them as covariates or check that they do not predict the label on their own.
+- **Noise adds nothing:** still a result worth showing if it is well controlled.
+- **Overlap with the thesis:** agree with the thesis supervisor on which code and results can be public before uploading anything with real data.
 
-## Qué contar en una entrevista
+## Interview pitch
 
-1. La pregunta y por qué importa (30 s).
-2. Cómo sé que el resultado es correcto: la tabla de controles del README.
-3. El resultado y su límite principal.
-4. Qué haría con más datos.
+1. The question and why it matters (30 s).
+2. How I know the result is right: the controls table in the README.
+3. The result and its main limitation.
+4. What I would do with more data.

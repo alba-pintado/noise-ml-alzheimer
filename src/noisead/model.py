@@ -1,15 +1,15 @@
-"""Modelos y evaluación.
+"""Models and evaluation.
 
-Con pocas decenas de donantes, lo importante es la honestidad de la
-evaluación, no el modelo más complejo:
+With a few dozen donors, what matters is honest evaluation, not the most
+complex model:
 
-- Validación cruzada anidada: el bucle interno elige hiperparámetros, el
-  externo estima el rendimiento. Escalado e imputación van dentro del
-  Pipeline, así que se ajustan solo con los datos de entrenamiento.
-- Repeticiones con distintas particiones para ver la variabilidad del AUC.
-- Las mismas particiones para todos los conjuntos de features, lo que permite
-  compararlos por pares (¿el ruido mejora a la media en la misma partición?).
-- Test de permutación de etiquetas para saber si el AUC supera al azar.
+- Nested cross-validation: the inner loop picks hyperparameters, the outer
+  loop estimates performance. Scaling and imputation live inside the
+  Pipeline, so they are fitted on training data only.
+- Repeats with different splits to show how much the AUC varies.
+- The same splits for every feature set, so they can be compared pairwise
+  (does noise beat the mean on the same split?).
+- A label-permutation test to check whether the AUC beats chance.
 """
 from __future__ import annotations
 
@@ -29,7 +29,7 @@ def make_model(kind: str, seed: int = 0) -> GridSearchCV:
         pipe = Pipeline([("impute", SimpleImputer(strategy="median")),
                          ("scale", StandardScaler()),
                          ("clf", LogisticRegression(solver="liblinear", max_iter=2000))])
-        # l1_ratio=1 (L1) selecciona pocos genes, interpretable; 0 (L2) reparte el peso.
+        # l1_ratio=1 (L1) selects a few genes, interpretable; 0 (L2) spreads the weight.
         grid = {"clf__C": [0.03, 0.3, 3.0], "clf__l1_ratio": [0.0, 1.0]}
     elif kind == "rf":
         pipe = Pipeline([("impute", SimpleImputer(strategy="median")),
@@ -43,7 +43,7 @@ def make_model(kind: str, seed: int = 0) -> GridSearchCV:
 
 def nested_cv(feature_sets: dict[str, pd.DataFrame], y: pd.Series, kind: str = "logreg",
               n_splits: int = 5, n_repeats: int = 5, seed: int = 0) -> pd.DataFrame:
-    """AUC por conjunto de features, repetición y fold (mismas particiones para todos)."""
+    """AUC per feature set, repeat and fold (same splits for every set)."""
     donors = y.index
     out = []
     for rep in range(n_repeats):
@@ -61,7 +61,7 @@ def nested_cv(feature_sets: dict[str, pd.DataFrame], y: pd.Series, kind: str = "
 
 def permutation_pvalue(X: pd.DataFrame, y: pd.Series, observed_auc: float, kind: str = "logreg",
                        n_perm: int = 50, seed: int = 0) -> float:
-    """p-valor empírico: proporción de permutaciones con AUC >= observado."""
+    """Empirical p-value: share of permutations with AUC >= observed."""
     rng = np.random.default_rng(seed)
     null = []
     for i in range(n_perm):
@@ -73,8 +73,8 @@ def permutation_pvalue(X: pd.DataFrame, y: pd.Series, observed_auc: float, kind:
 
 
 def top_features(X: pd.DataFrame, y: pd.Series, k: int = 15, seed: int = 0) -> pd.Series:
-    """Coeficientes del modelo ajustado con todos los donantes (solo para interpretar,
-    nunca para evaluar)."""
+    """Coefficients of the model fitted on all donors (for interpretation only,
+    never for evaluation)."""
     m = make_model("logreg", seed).fit(X, y)
     coef = pd.Series(m.best_estimator_.named_steps["clf"].coef_.ravel(), index=X.columns)
     return coef.reindex(coef.abs().sort_values(ascending=False).index).head(k)

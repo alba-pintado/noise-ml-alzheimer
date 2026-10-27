@@ -1,76 +1,76 @@
-# Ruido transcripcional como predictor de la patología de Alzheimer
+# Transcriptional noise as a predictor of Alzheimer's disease pathology
 
-**¿La variabilidad de expresión entre células predice la patología de Alzheimer mejor que la expresión media?**
+**Does cell-to-cell expression variability predict Alzheimer's pathology better than mean expression?**
 
-La mayoría de los análisis de single-cell comparan la **expresión media** entre enfermos y controles. Pero una célula puede mantener su media y perder el control fino de su expresión: más **ruido transcripcional** de una célula a otra. Este proyecto mide ese ruido en núcleos de cerebro humano (snRNA-seq) y lo usa como variable de un modelo de aprendizaje automático para predecir la patología de Alzheimer de cada donante.
+Most single-cell analyses compare **mean expression** between patients and controls. But a cell can keep its mean while losing fine control of its expression, which shows up as more **transcriptional noise** from one cell to the next. This project measures that noise in human brain nuclei (snRNA-seq) and uses it as input to a machine learning model that predicts each donor's Alzheimer's pathology.
 
-## Por qué importa (el "so what?")
+## Why it matters (the "so what?")
 
-Si el ruido aporta información **que la media no tiene**:
+If noise carries information **that the mean does not**:
 
-- señala **qué tipos celulares pierden antes la regulación** de su expresión, es decir, qué células son vulnerables primero;
-- propone una **familia de biomarcadores** distinta de la expresión diferencial clásica;
-- y ofrece una pregunta que se puede comprobar en datos independientes.
+- it points to **which cell types lose regulatory control first**, i.e. which cells are vulnerable earliest;
+- it proposes a **class of biomarkers** different from classic differential expression;
+- and it raises a question that can be tested in independent data.
 
-Si no aporta nada, también es un resultado útil: indica que basta con la media, que es más barata de medir.
+If it adds nothing, that is a useful result too: the mean is enough, and it is cheaper to measure.
 
-## Cómo sé que el resultado es correcto
+## How I know the result is right
 
-Esta es la parte central del proyecto. Con pocas decenas de donantes es muy fácil engañarse.
+This is the core of the project. With a few dozen donors it is very easy to fool yourself.
 
-| Riesgo | Control en este pipeline |
+| Risk | Control in this pipeline |
 |---|---|
-| Pseudorreplicación: tratar células como muestras independientes | El modelo predice **donantes**, no células |
-| La profundidad de secuenciación cambia el ruido aparente | Submuestreo de cada célula a la misma cantidad de UMIs |
-| El número de células cambia la varianza estimada | Mismo número de células por donante y tipo celular |
-| El CV² depende de la media de forma esperada | Se usa el **residuo** respecto a la tendencia media–CV² |
-| Fuga de información al ajustar hiperparámetros | Validación cruzada **anidada**; escalado e imputación dentro del pipeline |
-| Un AUC alto por azar | Test de permutación de etiquetas |
-| El modelo solo aprende edad o sexo | Línea base con covariables |
-| El código "funciona" pero no detecta nada | **Control positivo**: datos simulados con un efecto conocido solo en la varianza |
+| Pseudoreplication: treating cells as independent samples | The model predicts **donors**, not cells |
+| Sequencing depth changes apparent noise | Every cell downsampled to the same number of UMIs |
+| Cell numbers change the estimated variance | Same number of cells per donor and cell type |
+| CV² depends on the mean in an expected way | Uses the **residual** from the mean–CV² trend |
+| Information leaking through hyperparameter tuning | **Nested** cross-validation; scaling and imputation inside the pipeline |
+| A high AUC by chance | Label-permutation test |
+| The model only learns age or sex | Covariate-only baseline |
+| The code "runs" but detects nothing | **Positive control**: simulated data with a known variance-only effect |
 
-## Resultado con datos simulados (control positivo)
+## Result on simulated data (positive control)
 
-En la simulación, los donantes "enfermos" tienen más ruido en 40 genes de microglía **con la misma media**. El pipeline lo detecta con las features de ruido y no con las de media, que es lo esperado:
+In the simulation, "diseased" donors have more noise in 40 microglial genes **with the same mean**. The pipeline detects it with the noise features and not with the mean features, as expected:
 
-![Comparación de AUC](results/demo/auc_comparison.png)
+![AUC comparison](results/demo/auc_comparison.png)
 
-Que la media salga algo por debajo de 0,5 es normal cuando no hay señal y hay pocos donantes: es ruido de la validación cruzada, no un efecto real.
+The mean baseline landing slightly below 0.5 is normal when there is no signal and few donors: it is cross-validation noise, not a real effect.
 
-## Datos reales
+## Real data
 
-Pensado para el **Seattle Alzheimer's Disease Brain Cell Atlas (SEA-AD)**: snRNA-seq de la circunvolución temporal media con neuropatología por donante, descargable en formato `.h5ad` desde CELLxGENE. La etiqueta por defecto es el cambio neuropatológico de Alzheimer (ADNC: alto o intermedio frente a bajo o ninguno).
+Designed for the **Seattle Alzheimer's Disease Brain Cell Atlas (SEA-AD)**: snRNA-seq of the middle temporal gyrus with per-donor neuropathology, available as `.h5ad` from CELLxGENE. The default label is Alzheimer's disease neuropathologic change (ADNC: high or intermediate vs. low or none).
 
-Antes de ejecutar, revisa los nombres de columna con `adata.obs.columns` y ajusta `config.yaml`.
+Before running, check the column names with `adata.obs.columns` and adjust `config.yaml`.
 
-## Uso
+## Usage
 
 ```bash
 conda env create -f environment.yml
 conda activate noise-ml-ad
 
-python scripts/run_pipeline.py --demo        # prueba con datos simulados (~1-2 min)
-python scripts/run_pipeline.py               # datos reales según config.yaml
+python scripts/run_pipeline.py --demo        # test on simulated data (~1-2 min)
+python scripts/run_pipeline.py               # real data as set in config.yaml
 python tests/test_noise.py                   # tests
 ```
 
-Resultados en `results/`: AUC por partición (`cv_results.csv`), resumen (`report.json`), features con más peso y figuras.
+Outputs go to `results/`: AUC per split (`cv_results.csv`), summary (`report.json`), top-weighted features and figures.
 
-## Estructura
+## Structure
 
 ```
 src/noisead/
-  data.py       carga de .h5ad y simulación con efecto conocido
-  noise.py      submuestreo, estadísticos por grupo, residuo de CV², distancia al centroide
-  features.py   tablas de features por donante (media, ruido, ruido global, combinadas)
-  model.py      CV anidada repetida, test de permutación, coeficientes
-  plots.py      figuras
+  data.py       .h5ad loading and simulation with a known effect
+  noise.py      downsampling, per-group statistics, CV² residual, distance to centroid
+  features.py   donor-level feature tables (mean, noise, global noise, combined)
+  model.py      repeated nested CV, permutation test, coefficients
+  plots.py      figures
 scripts/run_pipeline.py
 config.yaml
 tests/
-docs/PLAN.md    plan y calendario del proyecto
+docs/PLAN.md    project plan and timeline
 ```
 
-## Autora
+## Author
 
-Alba Pintado Rodrigo · Máster en Bioinformática y Ciencias de Datos en Medicina de Precisión (ISCIII). El proyecto parte de mi TFM en el CBMSO sobre ruido transcripcional en Alzheimer.
+Alba Pintado Rodrigo · MSc in Bioinformatics and Data Science in Precision Medicine (Instituto de Salud Carlos III). The project builds on my MSc thesis at CBMSO on transcriptional noise in Alzheimer's disease.

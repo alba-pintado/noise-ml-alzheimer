@@ -1,4 +1,4 @@
-"""Tests rápidos. Ejecuta con `pytest` o con `python tests/test_noise.py`."""
+"""Quick tests. Run with `pytest` or `python tests/test_noise.py`."""
 import sys
 from pathlib import Path
 
@@ -16,14 +16,14 @@ def test_downsample_keeps_target_depth():
     sub, keep = noise.downsample_counts(X, 500, rng)
     totals = np.asarray(sub.sum(1)).ravel()
     assert keep.sum() == sub.shape[0]
-    assert abs(totals.mean() - 500) < 25            # binomial: ~500 de media
+    assert abs(totals.mean() - 500) < 25            # binomial: ~500 on average
 
 
 def test_residual_removes_mean_trend():
     rng = np.random.default_rng(1)
     m = 10 ** rng.uniform(-1, 1.5, 2000)
     st = pd.DataFrame({"donor": "D", "celltype": "A", "gene_idx": range(2000),
-                       "mean": m, "var": m + 0.2 * m ** 2})  # varianza NB
+                       "mean": m, "var": m + 0.2 * m ** 2})  # NB variance
     r = noise.residual_cv2(st, min_mean=0.0)
     assert abs(np.corrcoef(r["log_mean"], r["resid_cv2"])[0, 1]) < 0.05
 

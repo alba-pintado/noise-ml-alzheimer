@@ -1,15 +1,15 @@
-"""Tablas de features a nivel de DONANTE.
+"""DONOR-level feature tables.
 
-Clave del diseño: el modelo predice el estado de cada donante, no de cada
-célula. Las células de un mismo donante no son muestras independientes; usar
-células como filas inflaría el rendimiento (pseudorreplicación).
+Key design choice: the model predicts each donor's status, not each cell's.
+Cells from the same donor are not independent samples; using cells as rows
+would inflate performance (pseudoreplication).
 
-Conjuntos de features que se comparan, todos sobre el mismo panel de genes:
-    mean        expresión media (log) por gen x tipo celular  -> línea base
-    noise       residuo de CV² por gen x tipo celular
-    noise_global ruido global por tipo celular (mediana del residuo y
-                 distancia al centroide): pocas features, muy interpretables
-    combined    mean + noise: ¿el ruido aporta algo ADEMÁS de la media?
+Feature sets compared, all on the same gene panel:
+    mean         mean (log) expression per gene x cell type  -> baseline
+    noise        CV² residual per gene x cell type
+    noise_global global noise per cell type (median residual and distance
+                 to centroid): few, highly interpretable features
+    combined     mean + noise: does noise add anything BEYOND the mean?
 """
 from __future__ import annotations
 
@@ -30,8 +30,8 @@ def build_features(ds: Dataset, target_umis: int, min_cells: int, n_cells: int,
     st = residual_cv2(stats, min_mean=min_mean)
     st["gene"] = np.asarray(ds.genes)[st["gene_idx"].to_numpy()]
 
-    # Panel: genes presentes en todos los grupos de su tipo celular y con mayor
-    # media; se elige sin mirar la etiqueta.
+    # Panel: genes present in every group of their cell type, ranked by mean
+    # expression; chosen without looking at the label.
     n_groups = st.groupby("celltype", observed=True)["donor"].nunique()
     cover = st.groupby(["celltype", "gene"], observed=True).agg(n=("donor", "nunique"), m=("mean", "mean")).reset_index()
     cover = cover[cover["n"] == cover["celltype"].map(n_groups)]
@@ -60,5 +60,5 @@ def build_features(ds: Dataset, target_umis: int, min_cells: int, n_cells: int,
         "noise_global": noise_global.loc[donors],
         "combined": mean.loc[donors].join(noise.loc[donors]),
     }
-    feats["_gene_stats"] = st  # para figuras y diagnóstico
+    feats["_gene_stats"] = st  # for figures and diagnostics
     return feats

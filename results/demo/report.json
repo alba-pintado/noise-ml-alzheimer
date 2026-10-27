@@ -7,8 +7,8 @@
     },
     {
       "features": "combined",
-      "mean": 0.9833,
-      "std": 0.0068
+      "mean": 0.9856,
+      "std": 0.0063
     },
     {
       "features": "noise_global",
@@ -17,21 +17,21 @@
     },
     {
       "features": "mean",
-      "mean": 0.4111,
-      "std": 0.0799
+      "mean": 0.4089,
+      "std": 0.0785
     }
   ],
   "paired_vs_mean": {
     "noise": {
-      "mean_delta_auc": 0.576,
+      "mean_delta_auc": 0.578,
       "share_folds_better": 1.0
     },
     "noise_global": {
-      "mean_delta_auc": 0.449,
+      "mean_delta_auc": 0.451,
       "share_folds_better": 1.0
     },
     "combined": {
-      "mean_delta_auc": 0.572,
+      "mean_delta_auc": 0.577,
       "share_folds_better": 1.0
     }
   },
