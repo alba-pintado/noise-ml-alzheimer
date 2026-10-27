@@ -32,27 +32,9 @@ If the atlas is very large, work only with the cell types of interest and use an
 6. **Interpretation:** which cell types and genes carry the most weight; functional enrichment of those genes.
 7. **Extensions if time allows:** continuous target (Braak or a progression score), external validation, sensitivity to depth and cell numbers.
 
-## Timeline
-
-| Dates | Milestone |
-|---|---|
-| By 9 Nov | Public repo with the pipeline and the simulated positive control (v0.1). |
-| 10–23 Nov | Run on the Lau et al. 2020 `.h5ad`; compare these noise metrics with the thesis DECIBEL results. |
-| 24 Nov – 14 Dec | Download SEA-AD and validate whatever Lau et al. 2020 suggests. |
-| 15 Dec – 11 Jan | Biological interpretation, enrichment, final figures. |
-| 12–31 Jan | Final README with the "so what", code clean-up, external validation if possible. |
-| February | Thesis defence. Repo finished for recruiters and interviews. |
-
 ## Risks
 
 - **Few donors (21 in Lau et al. 2020):** limits power. Mitigation: simple models, many repeated splits, permutation test, and treating any result as a hypothesis for SEA-AD.
 - **Technical confounding:** batch, post-mortem interval, nucleus quality. Mitigation: include them as covariates or check that they do not predict the label on their own.
 - **Noise adds nothing:** still a result worth showing if it is well controlled.
 - **Overlap with the thesis:** agree with the thesis supervisor on which code and results can be public before uploading anything with real data.
-
-## Interview pitch
-
-1. The question and why it matters (30 s).
-2. How I know the result is right: the controls table in the README.
-3. The result and its main limitation.
-4. What I would do with more data.

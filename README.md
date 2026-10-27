@@ -14,9 +14,9 @@ If noise carries information **that the mean does not**:
 
 If it adds nothing, that is a useful result too: the mean is enough, and it is cheaper to measure.
 
-## How I know the result is right
+## How we know the result is right
 
-This is the core of the project. With a few dozen donors it is very easy to fool yourself.
+This is the core of the project. With a few dozen donors it is very easy to fool ourselves.
 
 | Risk | Control in this pipeline |
 |---|---|
@@ -44,7 +44,7 @@ The mean baseline landing slightly below 0.5 is normal when there is no signal a
 | **Lau et al. 2020** (*PNAS*), prefrontal cortex | Discovery | 21 (12 AD, 9 control) |
 | **SEA-AD**, middle temporal gyrus | External validation | 80+, with graded neuropathology |
 
-Lau et al. 2020 enters already preprocessed by my MSc thesis pipeline (QC with per-donor MAD thresholds, ambient RNA removal with decontX, doublet removal with scDblFinder; 137,303 nuclei). Use `config_lau2020.yaml`. With 21 donors, the evaluation relies on many repeated splits and a permutation test, and any result is treated as a hypothesis to be confirmed in SEA-AD (`config.yaml`), not as a finding.
+Lau et al. 2020 enters already preprocessed by the MSc thesis pipeline (QC with per-donor MAD thresholds, ambient RNA removal with decontX, doublet removal with scDblFinder; 137,303 nuclei). Use `config_lau2020.yaml`. With 21 donors, the evaluation relies on many repeated splits and a permutation test, and any result is treated as a hypothesis to be confirmed in SEA-AD (`config.yaml`), not as a finding.
 
 Before running, check the column names with `adata.obs.columns` and the per-nucleus UMI distribution, and adjust the config.
 
@@ -75,9 +75,9 @@ scripts/run_pipeline.py
 config.yaml           SEA-AD
 config_lau2020.yaml   Lau et al. 2020
 tests/
-docs/PLAN.md    project plan and timeline
+docs/PLAN.md    project plan
 ```
 
 ## Author
 
-Alba Pintado Rodrigo · MSc in Bioinformatics and Data Science in Precision Medicine (Instituto de Salud Carlos III). The project builds on my MSc thesis at CBMSO on transcriptional noise in Alzheimer's disease.
+Alba Pintado Rodrigo · MSc in Bioinformatics and Data Science in Precision Medicine (Instituto de Salud Carlos III). The project builds on the MSc thesis carried out at CBMSO on transcriptional noise in Alzheimer's disease.
