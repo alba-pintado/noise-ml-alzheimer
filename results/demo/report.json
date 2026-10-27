@@ -1,0 +1,42 @@
+{
+  "summary": [
+    {
+      "features": "noise",
+      "mean": 0.9867,
+      "std": 0.0075
+    },
+    {
+      "features": "combined",
+      "mean": 0.9833,
+      "std": 0.0068
+    },
+    {
+      "features": "noise_global",
+      "mean": 0.86,
+      "std": 0.0144
+    },
+    {
+      "features": "mean",
+      "mean": 0.4111,
+      "std": 0.0799
+    }
+  ],
+  "paired_vs_mean": {
+    "noise": {
+      "mean_delta_auc": 0.576,
+      "share_folds_better": 1.0
+    },
+    "noise_global": {
+      "mean_delta_auc": 0.449,
+      "share_folds_better": 1.0
+    },
+    "combined": {
+      "mean_delta_auc": 0.572,
+      "share_folds_better": 1.0
+    }
+  },
+  "permutation_p": {
+    "noise": 0.047619047619047616
+  },
+  "demo_true_noisy_genes_in_top15": 9
+}
