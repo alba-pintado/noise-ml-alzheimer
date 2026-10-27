@@ -1,0 +1,29 @@
+# Lau et al. 2020 (PNAS) prefrontal cortex snRNA-seq: 21 donors (12 AD, 9 control).
+# Input: the .h5ad produced by the thesis preprocessing pipeline
+# (QC, decontX, scDblFinder; 137,303 nuclei x 29,447 genes).
+seed: 0
+output_dir: results
+plot_celltype: null             # null = first cell type; set e.g. to the microglia label
+
+data:
+  path: data/raw/lau_sce_analisis.h5ad
+  counts_layer: counts          # raw counts live in layers["counts"]; X holds logcounts
+  donor_col: donor
+  celltype_col: celltype
+  label_col: condition          # AD / Ctrl
+  positive_values: [AD]
+  covariate_cols: null          # age and sex are not in the object
+  celltypes: null               # null = all annotated cell types
+
+features:
+  target_umis: 1000     # check the per-nucleus UMI distribution first; nuclei below are dropped
+  min_cells: 30
+  n_cells: 30
+  min_mean: 0.05
+  n_genes_panel: 200
+
+model:
+  kind: logreg
+  n_splits: 3           # 21 donors: 3 folds keep 3 controls in every test fold
+  n_repeats: 20         # many repeats, because single splits are very noisy with 21 donors
+  n_perm: 200

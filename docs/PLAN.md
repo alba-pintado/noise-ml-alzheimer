@@ -16,8 +16,8 @@ Do per-cell-type transcriptional noise measures predict a donor's Alzheimer's pa
 
 | | Use |
 |---|---|
-| **SEA-AD (MTG, snRNA-seq)** | Main dataset. Per-donor neuropathology (ADNC, Braak, Thal) and age/sex. Open access via CELLxGENE. |
-| **A second public atlas** (e.g. Mathys et al., ROSMAP) | External validation, if access allows. Check the terms of use before downloading. |
+| **Lau et al. 2020 (prefrontal cortex)** | Discovery. 21 donors (12 AD, 9 control), already preprocessed by the thesis pipeline (`.h5ad` with raw counts in `layers["counts"]`). |
+| **SEA-AD (MTG, snRNA-seq)** | External validation. Per-donor neuropathology (ADNC, Braak, Thal) and age/sex. Open access via CELLxGENE. |
 | **Simulated data** | Pipeline positive control (already included). |
 
 If the atlas is very large, work only with the cell types of interest and use anndata's `backed` mode.
@@ -37,15 +37,15 @@ If the atlas is very large, work only with the cell types of interest and use an
 | Dates | Milestone |
 |---|---|
 | By 9 Nov | Public repo with the pipeline and the simulated positive control (v0.1). |
-| 10–23 Nov | Download SEA-AD, explore metadata, first metrics on 2–3 cell types. |
-| 24 Nov – 14 Dec | Models on real data, technical controls, permutation test. |
+| 10–23 Nov | Run on the Lau et al. 2020 `.h5ad`; compare these noise metrics with the thesis DECIBEL results. |
+| 24 Nov – 14 Dec | Download SEA-AD and validate whatever Lau et al. 2020 suggests. |
 | 15 Dec – 11 Jan | Biological interpretation, enrichment, final figures. |
 | 12–31 Jan | Final README with the "so what", code clean-up, external validation if possible. |
 | February | Thesis defence. Repo finished for recruiters and interviews. |
 
 ## Risks
 
-- **Few donors:** limits power. Mitigation: simple models, repeated CV, intervals.
+- **Few donors (21 in Lau et al. 2020):** limits power. Mitigation: simple models, many repeated splits, permutation test, and treating any result as a hypothesis for SEA-AD.
 - **Technical confounding:** batch, post-mortem interval, nucleus quality. Mitigation: include them as covariates or check that they do not predict the label on their own.
 - **Noise adds nothing:** still a result worth showing if it is well controlled.
 - **Overlap with the thesis:** agree with the thesis supervisor on which code and results can be public before uploading anything with real data.

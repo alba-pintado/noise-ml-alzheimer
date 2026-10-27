@@ -39,9 +39,14 @@ The mean baseline landing slightly below 0.5 is normal when there is no signal a
 
 ## Real data
 
-Designed for the **Seattle Alzheimer's Disease Brain Cell Atlas (SEA-AD)**: snRNA-seq of the middle temporal gyrus with per-donor neuropathology, available as `.h5ad` from CELLxGENE. The default label is Alzheimer's disease neuropathologic change (ADNC: high or intermediate vs. low or none).
+| Dataset | Role | Donors |
+|---|---|---|
+| **Lau et al. 2020** (*PNAS*), prefrontal cortex | Discovery | 21 (12 AD, 9 control) |
+| **SEA-AD**, middle temporal gyrus | External validation | 80+, with graded neuropathology |
 
-Before running, check the column names with `adata.obs.columns` and adjust `config.yaml`.
+Lau et al. 2020 enters already preprocessed by my MSc thesis pipeline (QC with per-donor MAD thresholds, ambient RNA removal with decontX, doublet removal with scDblFinder; 137,303 nuclei). Use `config_lau2020.yaml`. With 21 donors, the evaluation relies on many repeated splits and a permutation test, and any result is treated as a hypothesis to be confirmed in SEA-AD (`config.yaml`), not as a finding.
+
+Before running, check the column names with `adata.obs.columns` and the per-nucleus UMI distribution, and adjust the config.
 
 ## Usage
 
@@ -50,7 +55,8 @@ conda env create -f environment.yml
 conda activate noise-ml-ad
 
 python scripts/run_pipeline.py --demo        # test on simulated data (~1-2 min)
-python scripts/run_pipeline.py               # real data as set in config.yaml
+python scripts/run_pipeline.py --config config_lau2020.yaml   # Lau et al. 2020
+python scripts/run_pipeline.py               # SEA-AD (config.yaml)
 python tests/test_noise.py                   # tests
 ```
 
@@ -66,7 +72,8 @@ src/noisead/
   model.py      repeated nested CV, permutation test, coefficients
   plots.py      figures
 scripts/run_pipeline.py
-config.yaml
+config.yaml           SEA-AD
+config_lau2020.yaml   Lau et al. 2020
 tests/
 docs/PLAN.md    project plan and timeline
 ```
